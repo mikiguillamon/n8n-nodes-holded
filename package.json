@@ -1,0 +1,63 @@
+{
+  "name": "@mikiguillamon/n8n-nodes-holded",
+  "version": "0.1.0",
+  "description": "n8n community node for Holded with guided resources plus a full custom API request operation.",
+  "license": "MIT",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "holded",
+    "erp",
+    "crm",
+    "accounting"
+  ],
+  "author": {
+    "name": "Miki Guillamon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikiguillamon/n8n-nodes-holded.git"
+  },
+  "homepage": "https://github.com/mikiguillamon/n8n-nodes-holded#readme",
+  "bugs": {
+    "url": "https://github.com/mikiguillamon/n8n-nodes-holded/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "n8n-node build",
+    "build:watch": "tsc --watch",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "lint:fix": "n8n-node lint --fix",
+    "release": "n8n-node release",
+    "prepublishOnly": "n8n-node prerelease"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": "^22.22.0 || >=24.0.0"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": true,
+    "credentials": [
+      "dist/credentials/HoldedApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Holded/Holded.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "^0.26.0",
+    "eslint": "9.39.4",
+    "prettier": "3.8.3",
+    "release-it": "20.0.0",
+    "typescript": "5.9.3"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
