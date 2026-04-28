@@ -672,14 +672,14 @@ const documentFiltersProperty = filterCollectionProperty('documentFilters', ['do
 		name: 'starttmp',
 		type: 'number',
 		default: 0,
-		description: 'Filter documents from this Unix timestamp',
+		description: 'Filter documents from this Unix timestamp. Accepts Unix seconds, milliseconds, or a date expression.',
 	},
 	{
 		displayName: 'End Timestamp',
 		name: 'endtmp',
 		type: 'number',
 		default: 0,
-		description: 'Filter documents until this Unix timestamp',
+		description: 'Filter documents until this Unix timestamp. Accepts Unix seconds, milliseconds, or a date expression.',
 	},
 	{
 		displayName: 'Paid',
@@ -751,14 +751,14 @@ const paymentFiltersProperty = filterCollectionProperty('paymentFilters', ['paym
 		name: 'starttmp',
 		type: 'number',
 		default: 0,
-		description: 'Filter payments from this Unix timestamp',
+		description: 'Filter payments from this Unix timestamp. Accepts Unix seconds, milliseconds, or a date expression.',
 	},
 	{
 		displayName: 'End Timestamp',
 		name: 'endtmp',
 		type: 'number',
 		default: 0,
-		description: 'Filter payments until this Unix timestamp',
+		description: 'Filter payments until this Unix timestamp. Accepts Unix seconds, milliseconds, or a date expression.',
 	},
 ]);
 
@@ -978,6 +978,52 @@ function getFilterParameters(context: IExecuteFunctions, resource: string, itemI
 	return query;
 }
 
+function normalizeUnixTimestamp(value: unknown, parameterName: string): number {
+	if (typeof value === 'number' && Number.isFinite(value)) {
+		return value >= 1_000_000_000_000 ? Math.floor(value / 1000) : Math.floor(value);
+	}
+
+	if (typeof value === 'string') {
+		const trimmedValue = value.trim();
+
+		if (trimmedValue === '') {
+			throw new ApplicationError(`Parameter "${parameterName}" cannot be empty`);
+		}
+
+		const numericValue = Number(trimmedValue);
+
+		if (Number.isFinite(numericValue)) {
+			return numericValue >= 1_000_000_000_000 ? Math.floor(numericValue / 1000) : Math.floor(numericValue);
+		}
+
+		const dateValue = Date.parse(trimmedValue);
+
+		if (!Number.isNaN(dateValue)) {
+			return Math.floor(dateValue / 1000);
+		}
+	}
+
+	throw new ApplicationError(
+		`Parameter "${parameterName}" must be a valid Unix timestamp in seconds, milliseconds, or an ISO date string`,
+	);
+}
+
+function normalizeTimestampQueryParameters(query: IDataObject): IDataObject {
+	const normalizedQuery = {
+		...query,
+	};
+
+	if (hasValue(normalizedQuery.starttmp)) {
+		normalizedQuery.starttmp = normalizeUnixTimestamp(normalizedQuery.starttmp, 'Start Timestamp');
+	}
+
+	if (hasValue(normalizedQuery.endtmp)) {
+		normalizedQuery.endtmp = normalizeUnixTimestamp(normalizedQuery.endtmp, 'End Timestamp');
+	}
+
+	return normalizedQuery;
+}
+
 function getQueryParameters(context: IExecuteFunctions, resource: string, itemIndex: number): IDataObject {
 	const query: IDataObject = {};
 
@@ -992,7 +1038,7 @@ function getQueryParameters(context: IExecuteFunctions, resource: string, itemIn
 		parseJsonObject((context.getNodeParameter('queryJson', itemIndex, '') as string) || '', 'Advanced Query JSON'),
 	);
 
-	return query;
+	return normalizeTimestampQueryParameters(query);
 }
 
 function getDocumentListQueryParameters(context: IExecuteFunctions, itemIndex: number, queryParameters: IDataObject): IDataObject {
