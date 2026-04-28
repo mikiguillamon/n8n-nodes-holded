@@ -17,6 +17,12 @@ Community node de n8n para trabajar con Holded.
   - Bookings
   - Accounting Accounts
 - Operación `Custom API Request` para cubrir cualquier endpoint de Holded sin esperar a que exista una acción dedicada en el nodo.
+- Controles tipo nodos oficiales de n8n:
+  - `Return All` y `Limit` en operaciones `Get Many`.
+  - Filtros guiados por recurso.
+  - `Additional Query Parameters` para parámetros no modelados.
+  - `Fields` para cuerpos simples sin escribir JSON.
+  - JSON avanzado opcional para casos con estructuras anidadas.
 
 ## Enfoque
 
@@ -55,5 +61,6 @@ npm run dev
 ## Notas
 
 - El nodo usa la URL base `https://api.holded.com`.
-- Las operaciones de creación y actualización aceptan `Body JSON` para no limitar los campos que expone Holded en cada recurso.
+- Las operaciones de creación y actualización aceptan `Fields` para payloads simples y `Advanced Body JSON` para no limitar los campos que expone Holded en cada recurso.
+- Las operaciones `Get Many` permiten limitar resultados desde n8n. Si Holded no devuelve paginación nativa en un endpoint concreto, el límite se aplica sobre la respuesta recibida.
 - Para endpoints no modelados explícitamente, usa `Custom API Request`.

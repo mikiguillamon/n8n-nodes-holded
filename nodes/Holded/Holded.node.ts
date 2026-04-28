@@ -12,6 +12,24 @@ import { ApplicationError, NodeConnectionTypes, NodeOperationError } from 'n8n-w
 
 const holdedApiBase = 'https://api.holded.com';
 
+const listableResources = ['contact', 'product', 'service', 'document', 'payment', 'project', 'task', 'lead'];
+
+const resourcesWithBody = [
+	'contact',
+	'product',
+	'service',
+	'document',
+	'payment',
+	'project',
+	'task',
+	'lead',
+	'booking',
+	'accountingAccount',
+	'customApi',
+];
+
+const operationsWithBody = ['create', 'update', 'createTask', 'updateTask', 'request'];
+
 const resourceProperty: INodeProperties = {
 	displayName: 'Resource',
 	name: 'resource',
@@ -177,6 +195,176 @@ const customMethodProperty: INodeProperties = {
 		},
 	},
 	description: 'HTTP method to use',
+};
+
+const returnAllProperty: INodeProperties = {
+	displayName: 'Return All',
+	name: 'returnAll',
+	type: 'boolean',
+	default: true,
+	description: 'Whether to return all results or only up to a given limit',
+	displayOptions: {
+		show: {
+			resource: listableResources,
+			operation: ['list'],
+		},
+	},
+};
+
+const limitProperty: INodeProperties = {
+	displayName: 'Limit',
+	name: 'limit',
+	type: 'number',
+	default: 50,
+	typeOptions: {
+		minValue: 1,
+		maxValue: 1000,
+	},
+	description: 'Max number of results to return',
+	displayOptions: {
+		show: {
+			resource: listableResources,
+			operation: ['list'],
+			returnAll: [false],
+		},
+	},
+};
+
+const requestPaginationProperty: INodeProperties = {
+	displayName: 'Request Pagination',
+	name: 'requestPagination',
+	type: 'collection',
+	placeholder: 'Add Pagination Option',
+	default: {},
+	description: 'Pagination query parameters to send to Holded when the endpoint supports them',
+	displayOptions: {
+		show: {
+			resource: listableResources,
+			operation: ['list'],
+		},
+	},
+	options: [
+		{
+			displayName: 'Page',
+			name: 'page',
+			type: 'number',
+			default: 1,
+			typeOptions: {
+				minValue: 1,
+			},
+			description: 'Page number to request from Holded',
+		},
+		{
+			displayName: 'Items Per Page',
+			name: 'limit',
+			type: 'number',
+			default: 50,
+			typeOptions: {
+				minValue: 1,
+				maxValue: 1000,
+			},
+			description: 'Max number of results to return',
+		},
+	],
+};
+
+const filterCollectionProperty = (
+	name: string,
+	resources: string[],
+	options: INodeProperties[],
+): INodeProperties => ({
+	displayName: 'Filters',
+	name,
+	type: 'collection',
+	placeholder: 'Add Filter',
+	default: {},
+	displayOptions: {
+		show: {
+			resource: resources,
+			operation: ['list'],
+		},
+	},
+	options,
+});
+
+const additionalQueryParametersProperty: INodeProperties = {
+	displayName: 'Additional Query Parameters',
+	name: 'additionalQueryParameters',
+	type: 'fixedCollection',
+	placeholder: 'Add Parameter',
+	default: {},
+	typeOptions: {
+		multipleValues: true,
+	},
+	description: 'Extra query string parameters not exposed as filters',
+	displayOptions: {
+		show: {
+			resource: [...listableResources, 'customApi'],
+			operation: ['list', 'request'],
+		},
+	},
+	options: [
+		{
+			displayName: 'Parameter',
+			name: 'parameters',
+			values: [
+				{
+					displayName: 'Name',
+					name: 'name',
+					type: 'string',
+					default: '',
+					description: 'Query string parameter name',
+				},
+				{
+					displayName: 'Value',
+					name: 'value',
+					type: 'string',
+					default: '',
+					description: 'Query string parameter value',
+				},
+			],
+		},
+	],
+};
+
+const bodyFieldsProperty: INodeProperties = {
+	displayName: 'Fields',
+	name: 'bodyFields',
+	type: 'fixedCollection',
+	placeholder: 'Add Field',
+	default: {},
+	typeOptions: {
+		multipleValues: true,
+	},
+	description: 'Simple request body fields. Use Advanced Body JSON for nested structures such as document lines.',
+	displayOptions: {
+		show: {
+			resource: resourcesWithBody,
+			operation: operationsWithBody,
+		},
+	},
+	options: [
+		{
+			displayName: 'Field',
+			name: 'fields',
+			values: [
+				{
+					displayName: 'Name',
+					name: 'name',
+					type: 'string',
+					default: '',
+					description: 'Body field name',
+				},
+				{
+					displayName: 'Value',
+					name: 'value',
+					type: 'string',
+					default: '',
+					description: 'Body field value',
+				},
+			],
+		},
+	],
 };
 
 const contactOperationProperty: INodeProperties = {
@@ -383,6 +571,199 @@ const customApiOperationProperty: INodeProperties = {
 	options: [{ action: 'Send a custom API request', name: 'Send Request', value: 'request' }],
 };
 
+const contactFiltersProperty = filterCollectionProperty('contactFilters', ['contact'], [
+	{
+		displayName: 'Email',
+		name: 'email',
+		type: 'string',
+		default: '',
+		placeholder: 'name@email.com',
+		description: 'Filter by contact email',
+	},
+	{
+		displayName: 'Phone',
+		name: 'phone',
+		type: 'string',
+		default: '',
+		description: 'Filter by contact phone',
+	},
+	{
+		displayName: 'Mobile',
+		name: 'mobile',
+		type: 'string',
+		default: '',
+		description: 'Filter by contact mobile phone',
+	},
+	{
+		displayName: 'Code',
+		name: 'code',
+		type: 'string',
+		default: '',
+		description: 'Filter by contact code',
+	},
+	{
+		displayName: 'Name',
+		name: 'name',
+		type: 'string',
+		default: '',
+		description: 'Filter by contact name',
+	},
+]);
+
+const productFiltersProperty = filterCollectionProperty('productFilters', ['product'], [
+	{
+		displayName: 'SKU',
+		name: 'sku',
+		type: 'string',
+		default: '',
+		description: 'Filter by product SKU',
+	},
+	{
+		displayName: 'Barcode',
+		name: 'barcode',
+		type: 'string',
+		default: '',
+		description: 'Filter by product barcode',
+	},
+	{
+		displayName: 'Name',
+		name: 'name',
+		type: 'string',
+		default: '',
+		description: 'Filter by product name',
+	},
+]);
+
+const serviceFiltersProperty = filterCollectionProperty('serviceFilters', ['service'], [
+	{
+		displayName: 'Name',
+		name: 'name',
+		type: 'string',
+		default: '',
+		description: 'Filter by service name',
+	},
+]);
+
+const documentFiltersProperty = filterCollectionProperty('documentFilters', ['document'], [
+	{
+		displayName: 'Contact ID',
+		name: 'contactid',
+		type: 'string',
+		default: '',
+		description: 'Filter by Holded contact ID',
+	},
+	{
+		displayName: 'Start Timestamp',
+		name: 'starttmp',
+		type: 'number',
+		default: 0,
+		description: 'Filter documents from this Unix timestamp',
+	},
+	{
+		displayName: 'End Timestamp',
+		name: 'endtmp',
+		type: 'number',
+		default: 0,
+		description: 'Filter documents until this Unix timestamp',
+	},
+	{
+		displayName: 'Paid',
+		name: 'paid',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to return paid documents',
+	},
+	{
+		displayName: 'Archived',
+		name: 'archived',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to return archived documents',
+	},
+]);
+
+const paymentFiltersProperty = filterCollectionProperty('paymentFilters', ['payment'], [
+	{
+		displayName: 'Contact ID',
+		name: 'contactid',
+		type: 'string',
+		default: '',
+		description: 'Filter by Holded contact ID',
+	},
+	{
+		displayName: 'Start Timestamp',
+		name: 'starttmp',
+		type: 'number',
+		default: 0,
+		description: 'Filter payments from this Unix timestamp',
+	},
+	{
+		displayName: 'End Timestamp',
+		name: 'endtmp',
+		type: 'number',
+		default: 0,
+		description: 'Filter payments until this Unix timestamp',
+	},
+]);
+
+const projectFiltersProperty = filterCollectionProperty('projectFilters', ['project'], [
+	{
+		displayName: 'Client ID',
+		name: 'clientid',
+		type: 'string',
+		default: '',
+		description: 'Filter by client/contact ID',
+	},
+	{
+		displayName: 'Status',
+		name: 'status',
+		type: 'string',
+		default: '',
+		description: 'Filter by project status',
+	},
+]);
+
+const taskFiltersProperty = filterCollectionProperty('taskFilters', ['task'], [
+	{
+		displayName: 'Project ID',
+		name: 'projectid',
+		type: 'string',
+		default: '',
+		description: 'Filter by project ID',
+	},
+	{
+		displayName: 'Status',
+		name: 'status',
+		type: 'string',
+		default: '',
+		description: 'Filter by task status',
+	},
+]);
+
+const leadFiltersProperty = filterCollectionProperty('leadFilters', ['lead'], [
+	{
+		displayName: 'Contact ID',
+		name: 'contactid',
+		type: 'string',
+		default: '',
+		description: 'Filter by contact ID',
+	},
+	{
+		displayName: 'Stage ID',
+		name: 'stageid',
+		type: 'string',
+		default: '',
+		description: 'Filter by CRM stage ID',
+	},
+	{
+		displayName: 'Status',
+		name: 'status',
+		type: 'string',
+		default: '',
+		description: 'Filter by lead status',
+	},
+]);
+
 const properties: INodeProperties[] = [
 	resourceProperty,
 	contactOperationProperty,
@@ -412,6 +793,18 @@ const properties: INodeProperties[] = [
 	),
 	documentTypeProperty,
 	customMethodProperty,
+	returnAllProperty,
+	limitProperty,
+	requestPaginationProperty,
+	contactFiltersProperty,
+	productFiltersProperty,
+	serviceFiltersProperty,
+	documentFiltersProperty,
+	paymentFiltersProperty,
+	projectFiltersProperty,
+	taskFiltersProperty,
+	leadFiltersProperty,
+	additionalQueryParametersProperty,
 	simpleStringProperty(
 		'customPath',
 		'Path',
@@ -422,15 +815,16 @@ const properties: INodeProperties[] = [
 	),
 	jsonProperty(
 		'queryJson',
-		'Query JSON',
+		'Advanced Query JSON',
 		['contact', 'product', 'service', 'document', 'payment', 'project', 'task', 'lead', 'customApi'],
 		['list', 'request'],
 		'{\n  "phone": "+34999999999"\n}',
-		'Optional query string parameters as a JSON object',
+		'Optional query string parameters as a JSON object. Values here override filters and additional query parameters.',
 	),
+	bodyFieldsProperty,
 	jsonProperty(
 		'bodyJson',
-		'Body JSON',
+		'Advanced Body JSON',
 		[
 			'contact',
 			'product',
@@ -446,7 +840,7 @@ const properties: INodeProperties[] = [
 		],
 		['create', 'update', 'createTask', 'updateTask', 'request'],
 		'{\n  "name": "Acme"\n}',
-		'Request body as a JSON object',
+		'Optional request body as a JSON object. Values here override simple fields.',
 	),
 ];
 
@@ -470,6 +864,111 @@ function parseJsonObject(value: string, parameterName: string): IDataObject {
 	}
 
 	return parsed as IDataObject;
+}
+
+function hasValue(value: unknown): boolean {
+	return value !== undefined && value !== null && value !== '';
+}
+
+function addObjectValues(target: IDataObject, source: IDataObject): void {
+	for (const [key, value] of Object.entries(source)) {
+		if (hasValue(value)) {
+			target[key] = value;
+		}
+	}
+}
+
+function getFixedCollectionPairs(
+	context: IExecuteFunctions,
+	parameterName: string,
+	itemIndex: number,
+): IDataObject {
+	const pairs = context.getNodeParameter(parameterName, itemIndex, []) as IDataObject[];
+	const values: IDataObject = {};
+
+	for (const pair of pairs) {
+		const name = typeof pair.name === 'string' ? pair.name.trim() : '';
+
+		if (name && hasValue(pair.value)) {
+			values[name] = pair.value;
+		}
+	}
+
+	return values;
+}
+
+function getFilterParameters(context: IExecuteFunctions, resource: string, itemIndex: number): IDataObject {
+	const filterParameterByResource: Record<string, string> = {
+		contact: 'contactFilters',
+		document: 'documentFilters',
+		lead: 'leadFilters',
+		payment: 'paymentFilters',
+		product: 'productFilters',
+		project: 'projectFilters',
+		service: 'serviceFilters',
+		task: 'taskFilters',
+	};
+	const filterParameterName = filterParameterByResource[resource];
+
+	if (!filterParameterName) {
+		return {};
+	}
+
+	const filters = context.getNodeParameter(filterParameterName, itemIndex, {}) as IDataObject;
+	const query: IDataObject = {};
+	addObjectValues(query, filters);
+
+	return query;
+}
+
+function getQueryParameters(context: IExecuteFunctions, resource: string, itemIndex: number): IDataObject {
+	const query: IDataObject = {};
+	addObjectValues(query, context.getNodeParameter('requestPagination', itemIndex, {}) as IDataObject);
+	addObjectValues(query, getFilterParameters(context, resource, itemIndex));
+	addObjectValues(query, getFixedCollectionPairs(context, 'additionalQueryParameters.parameters', itemIndex));
+	addObjectValues(
+		query,
+		parseJsonObject((context.getNodeParameter('queryJson', itemIndex, '') as string) || '', 'Advanced Query JSON'),
+	);
+
+	return query;
+}
+
+function getBodyParameters(context: IExecuteFunctions, itemIndex: number): IDataObject {
+	const body: IDataObject = {};
+	addObjectValues(body, getFixedCollectionPairs(context, 'bodyFields.fields', itemIndex));
+	addObjectValues(
+		body,
+		parseJsonObject((context.getNodeParameter('bodyJson', itemIndex, '') as string) || '', 'Advanced Body JSON'),
+	);
+
+	return body;
+}
+
+function isListOperation(resource: string, operation: string): boolean {
+	return operation === 'list' && listableResources.includes(resource);
+}
+
+function applyOutputLimit(
+	context: IExecuteFunctions,
+	resource: string,
+	operation: string,
+	itemIndex: number,
+	entries: unknown[],
+): unknown[] {
+	if (!isListOperation(resource, operation)) {
+		return entries;
+	}
+
+	const returnAll = context.getNodeParameter('returnAll', itemIndex, true) as boolean;
+
+	if (returnAll) {
+		return entries;
+	}
+
+	const limit = context.getNodeParameter('limit', itemIndex, 50) as number;
+
+	return entries.slice(0, limit);
 }
 
 function ensureLeadingSlash(path: string): string {
@@ -536,24 +1035,18 @@ function buildRequestOptions(
 		url: '',
 	};
 
-	const queryJson = parseJsonObject(
-		(context.getNodeParameter('queryJson', itemIndex, '') as string) || '',
-		'Query JSON',
-	);
-	const bodyJson = parseJsonObject(
-		(context.getNodeParameter('bodyJson', itemIndex, '') as string) || '',
-		'Body JSON',
-	);
+	const queryParameters = getQueryParameters(context, resource, itemIndex);
+	const bodyParameters = getBodyParameters(context, itemIndex);
 
 	const setQuery = () => {
-		if (Object.keys(queryJson).length > 0) {
-			requestOptions.qs = queryJson;
+		if (Object.keys(queryParameters).length > 0) {
+			requestOptions.qs = queryParameters;
 		}
 	};
 
 	const setBody = () => {
-		if (Object.keys(bodyJson).length > 0) {
-			requestOptions.body = bodyJson;
+		if (Object.keys(bodyParameters).length > 0) {
+			requestOptions.body = bodyParameters;
 		}
 	};
 
@@ -854,7 +1347,8 @@ export class Holded implements INodeType {
 					requestOptions,
 				);
 
-				const entries = Array.isArray(response) ? response : [response];
+				const responseEntries = Array.isArray(response) ? response : [response];
+				const entries = applyOutputLimit(this, resource, operation, itemIndex, responseEntries);
 
 				for (const entry of entries) {
 					returnData.push({
