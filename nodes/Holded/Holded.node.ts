@@ -230,6 +230,20 @@ const limitProperty: INodeProperties = {
 	},
 };
 
+const useRequestPaginationProperty: INodeProperties = {
+	displayName: 'Send Page Parameters',
+	name: 'useRequestPagination',
+	type: 'boolean',
+	default: false,
+	description: 'Whether to send page and limit query parameters to Holded. Enable only for endpoints that support them.',
+	displayOptions: {
+		show: {
+			resource: listableResources,
+			operation: ['list'],
+		},
+	},
+};
+
 const requestPaginationProperty: INodeProperties = {
 	displayName: 'Request Pagination',
 	name: 'requestPagination',
@@ -241,6 +255,7 @@ const requestPaginationProperty: INodeProperties = {
 		show: {
 			resource: listableResources,
 			operation: ['list'],
+			useRequestPagination: [true],
 		},
 	},
 	options: [
@@ -669,16 +684,57 @@ const documentFiltersProperty = filterCollectionProperty('documentFilters', ['do
 	{
 		displayName: 'Paid',
 		name: 'paid',
-		type: 'boolean',
-		default: false,
-		description: 'Whether to return paid documents',
+		type: 'options',
+		default: '1',
+		description: 'Filter by paid status',
+		options: [
+			{
+				name: 'Not Paid',
+				value: '0',
+			},
+			{
+				name: 'Paid',
+				value: '1',
+			},
+			{
+				name: 'Partially Paid',
+				value: '2',
+			},
+		],
 	},
 	{
-		displayName: 'Archived',
-		name: 'archived',
-		type: 'boolean',
-		default: false,
-		description: 'Whether to return archived documents',
+		displayName: 'Billed',
+		name: 'billed',
+		type: 'options',
+		default: '1',
+		description: 'Filter by billed status',
+		options: [
+			{
+				name: 'Not Billed',
+				value: '0',
+			},
+			{
+				name: 'Billed',
+				value: '1',
+			},
+		],
+	},
+	{
+		displayName: 'Sort',
+		name: 'sort',
+		type: 'options',
+		default: 'created-desc',
+		description: 'Sort documents by creation date',
+		options: [
+			{
+				name: 'Created Ascending',
+				value: 'created-asc',
+			},
+			{
+				name: 'Created Descending',
+				value: 'created-desc',
+			},
+		],
 	},
 ]);
 
@@ -795,6 +851,7 @@ const properties: INodeProperties[] = [
 	customMethodProperty,
 	returnAllProperty,
 	limitProperty,
+	useRequestPaginationProperty,
 	requestPaginationProperty,
 	contactFiltersProperty,
 	productFiltersProperty,
@@ -923,7 +980,11 @@ function getFilterParameters(context: IExecuteFunctions, resource: string, itemI
 
 function getQueryParameters(context: IExecuteFunctions, resource: string, itemIndex: number): IDataObject {
 	const query: IDataObject = {};
-	addObjectValues(query, context.getNodeParameter('requestPagination', itemIndex, {}) as IDataObject);
+
+	if (context.getNodeParameter('useRequestPagination', itemIndex, false) as boolean) {
+		addObjectValues(query, context.getNodeParameter('requestPagination', itemIndex, {}) as IDataObject);
+	}
+
 	addObjectValues(query, getFilterParameters(context, resource, itemIndex));
 	addObjectValues(query, getFixedCollectionPairs(context, 'additionalQueryParameters.parameters', itemIndex));
 	addObjectValues(
@@ -932,6 +993,20 @@ function getQueryParameters(context: IExecuteFunctions, resource: string, itemIn
 	);
 
 	return query;
+}
+
+function getDocumentListQueryParameters(context: IExecuteFunctions, itemIndex: number, queryParameters: IDataObject): IDataObject {
+	const documentQueryParameters = {
+		...queryParameters,
+	};
+	const returnAll = context.getNodeParameter('returnAll', itemIndex, true) as boolean;
+
+	if (returnAll && !hasValue(documentQueryParameters.starttmp) && !hasValue(documentQueryParameters.endtmp)) {
+		documentQueryParameters.starttmp = 0;
+		documentQueryParameters.endtmp = Math.floor(Date.now() / 1000);
+	}
+
+	return documentQueryParameters;
 }
 
 function getBodyParameters(context: IExecuteFunctions, itemIndex: number): IDataObject {
@@ -1038,9 +1113,9 @@ function buildRequestOptions(
 	const queryParameters = getQueryParameters(context, resource, itemIndex);
 	const bodyParameters = getBodyParameters(context, itemIndex);
 
-	const setQuery = () => {
-		if (Object.keys(queryParameters).length > 0) {
-			requestOptions.qs = queryParameters;
+	const setQuery = (parameters = queryParameters) => {
+		if (Object.keys(parameters).length > 0) {
+			requestOptions.qs = parameters;
 		}
 	};
 
@@ -1135,7 +1210,7 @@ function buildRequestOptions(
 
 			if (operation === 'list') {
 				requestOptions.url = basePath;
-				setQuery();
+				setQuery(getDocumentListQueryParameters(context, itemIndex, queryParameters));
 			} else if (operation === 'get') {
 				const documentId = getRequiredStringParameter(context, 'documentId', itemIndex, 'Document ID');
 				requestOptions.url = `${basePath}/${encodeURIComponent(documentId)}`;
