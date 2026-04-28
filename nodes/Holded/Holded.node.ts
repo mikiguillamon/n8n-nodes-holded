@@ -152,6 +152,16 @@ const simpleStringProperty = (
 	},
 });
 
+const advancedJsonProperty = (
+	name: string,
+	displayName: string,
+	resource: string,
+	operations: string[],
+	placeholder: string,
+	description: string,
+): INodeProperties =>
+	jsonProperty(name, displayName, [resource], operations, placeholder, description);
+
 const documentTypeProperty = simpleStringProperty(
 	'documentType',
 	'Document Type',
@@ -670,15 +680,17 @@ const documentFiltersProperty = filterCollectionProperty('documentFilters', ['do
 	{
 		displayName: 'Start Timestamp',
 		name: 'starttmp',
-		type: 'number',
-		default: 0,
+		type: 'string',
+		default: '',
+		placeholder: '1735689600 or 2025-01-01',
 		description: 'Filter documents from this Unix timestamp. Accepts Unix seconds, milliseconds, or a date expression.',
 	},
 	{
 		displayName: 'End Timestamp',
 		name: 'endtmp',
-		type: 'number',
-		default: 0,
+		type: 'string',
+		default: '',
+		placeholder: '1767225599 or 2025-12-31',
 		description: 'Filter documents until this Unix timestamp. Accepts Unix seconds, milliseconds, or a date expression.',
 	},
 	{
@@ -749,15 +761,17 @@ const paymentFiltersProperty = filterCollectionProperty('paymentFilters', ['paym
 	{
 		displayName: 'Start Timestamp',
 		name: 'starttmp',
-		type: 'number',
-		default: 0,
+		type: 'string',
+		default: '',
+		placeholder: '1735689600 or 2025-01-01',
 		description: 'Filter payments from this Unix timestamp. Accepts Unix seconds, milliseconds, or a date expression.',
 	},
 	{
 		displayName: 'End Timestamp',
 		name: 'endtmp',
-		type: 'number',
-		default: 0,
+		type: 'string',
+		default: '',
+		placeholder: '1767225599 or 2025-12-31',
 		description: 'Filter payments until this Unix timestamp. Accepts Unix seconds, milliseconds, or a date expression.',
 	},
 ]);
@@ -870,32 +884,164 @@ const properties: INodeProperties[] = [
 		'Absolute Holded API path, beginning with /api/...',
 		'/api/invoicing/v1/contacts',
 	),
-	jsonProperty(
-		'queryJson',
+	advancedJsonProperty(
+		'contactQueryJson',
 		'Advanced Query JSON',
-		['contact', 'product', 'service', 'document', 'payment', 'project', 'task', 'lead', 'customApi'],
-		['list', 'request'],
+		'contact',
+		['list'],
 		'{\n  "phone": "+34999999999"\n}',
 		'Optional query string parameters as a JSON object. Values here override filters and additional query parameters.',
 	),
+	advancedJsonProperty(
+		'productQueryJson',
+		'Advanced Query JSON',
+		'product',
+		['list'],
+		'{\n  "sku": "REF-001"\n}',
+		'Optional query string parameters as a JSON object. Values here override filters and additional query parameters.',
+	),
+	advancedJsonProperty(
+		'serviceQueryJson',
+		'Advanced Query JSON',
+		'service',
+		['list'],
+		'{\n  "name": "Consulting"\n}',
+		'Optional query string parameters as a JSON object. Values here override filters and additional query parameters.',
+	),
+	advancedJsonProperty(
+		'documentQueryJson',
+		'Advanced Query JSON',
+		'document',
+		['list'],
+		'{\n  "contactid": "contact_id"\n}',
+		'Optional query string parameters as a JSON object. Values here override filters and additional query parameters.',
+	),
+	advancedJsonProperty(
+		'paymentQueryJson',
+		'Advanced Query JSON',
+		'payment',
+		['list'],
+		'{\n  "contactid": "contact_id"\n}',
+		'Optional query string parameters as a JSON object. Values here override filters and additional query parameters.',
+	),
+	advancedJsonProperty(
+		'projectQueryJson',
+		'Advanced Query JSON',
+		'project',
+		['list'],
+		'{\n  "status": "active"\n}',
+		'Optional query string parameters as a JSON object. Values here override filters and additional query parameters.',
+	),
+	advancedJsonProperty(
+		'taskQueryJson',
+		'Advanced Query JSON',
+		'task',
+		['list'],
+		'{\n  "projectid": "project_id"\n}',
+		'Optional query string parameters as a JSON object. Values here override filters and additional query parameters.',
+	),
+	advancedJsonProperty(
+		'leadQueryJson',
+		'Advanced Query JSON',
+		'lead',
+		['list'],
+		'{\n  "status": "open"\n}',
+		'Optional query string parameters as a JSON object. Values here override filters and additional query parameters.',
+	),
+	advancedJsonProperty(
+		'customQueryJson',
+		'Advanced Query JSON',
+		'customApi',
+		['request'],
+		'{\n  "limit": 100\n}',
+		'Optional query string parameters as a JSON object. Values here override additional query parameters.',
+	),
 	bodyFieldsProperty,
-	jsonProperty(
-		'bodyJson',
+	advancedJsonProperty(
+		'contactBodyJson',
 		'Advanced Body JSON',
-		[
-			'contact',
-			'product',
-			'service',
-			'document',
-			'payment',
-			'project',
-			'task',
-			'lead',
-			'booking',
-			'accountingAccount',
-			'customApi',
-		],
-		['create', 'update', 'createTask', 'updateTask', 'request'],
+		'contact',
+		['create', 'update'],
+		'{\n  "name": "Acme"\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'productBodyJson',
+		'Advanced Body JSON',
+		'product',
+		['create', 'update'],
+		'{\n  "name": "Product"\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'serviceBodyJson',
+		'Advanced Body JSON',
+		'service',
+		['create', 'update'],
+		'{\n  "name": "Service"\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'documentBodyJson',
+		'Advanced Body JSON',
+		'document',
+		['create', 'update'],
+		'{\n  "contactId": "contact_id"\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'paymentBodyJson',
+		'Advanced Body JSON',
+		'payment',
+		['create', 'update'],
+		'{\n  "amount": 10\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'projectBodyJson',
+		'Advanced Body JSON',
+		'project',
+		['create', 'update'],
+		'{\n  "name": "Project"\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'taskBodyJson',
+		'Advanced Body JSON',
+		'task',
+		['create', 'update'],
+		'{\n  "name": "Task"\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'leadBodyJson',
+		'Advanced Body JSON',
+		'lead',
+		['create', 'update', 'createTask', 'updateTask'],
+		'{\n  "name": "Lead"\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'bookingBodyJson',
+		'Advanced Body JSON',
+		'booking',
+		['create'],
+		'{\n  "name": "Booking"\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'accountingAccountBodyJson',
+		'Advanced Body JSON',
+		'accountingAccount',
+		['create'],
+		'{\n  "name": "Account"\n}',
+		'Optional request body as a JSON object. Values here override simple fields.',
+	),
+	advancedJsonProperty(
+		'customBodyJson',
+		'Advanced Body JSON',
+		'customApi',
+		['request'],
 		'{\n  "name": "Acme"\n}',
 		'Optional request body as a JSON object. Values here override simple fields.',
 	),
@@ -1024,8 +1170,59 @@ function normalizeTimestampQueryParameters(query: IDataObject): IDataObject {
 	return normalizedQuery;
 }
 
+function ensureTimestampRange(query: IDataObject): IDataObject {
+	const normalizedQuery = {
+		...query,
+	};
+
+	if (hasValue(normalizedQuery.starttmp) && !hasValue(normalizedQuery.endtmp)) {
+		normalizedQuery.endtmp = Math.floor(Date.now() / 1000);
+	}
+
+	if (hasValue(normalizedQuery.endtmp) && !hasValue(normalizedQuery.starttmp)) {
+		normalizedQuery.starttmp = 0;
+	}
+
+	return normalizedQuery;
+}
+
+function getAdvancedQueryJsonParameterName(resource: string): string | undefined {
+	const parameterNameByResource: Record<string, string> = {
+		contact: 'contactQueryJson',
+		customApi: 'customQueryJson',
+		document: 'documentQueryJson',
+		lead: 'leadQueryJson',
+		payment: 'paymentQueryJson',
+		product: 'productQueryJson',
+		project: 'projectQueryJson',
+		service: 'serviceQueryJson',
+		task: 'taskQueryJson',
+	};
+
+	return parameterNameByResource[resource];
+}
+
+function getAdvancedBodyJsonParameterName(resource: string): string | undefined {
+	const parameterNameByResource: Record<string, string> = {
+		accountingAccount: 'accountingAccountBodyJson',
+		booking: 'bookingBodyJson',
+		contact: 'contactBodyJson',
+		customApi: 'customBodyJson',
+		document: 'documentBodyJson',
+		lead: 'leadBodyJson',
+		payment: 'paymentBodyJson',
+		product: 'productBodyJson',
+		project: 'projectBodyJson',
+		service: 'serviceBodyJson',
+		task: 'taskBodyJson',
+	};
+
+	return parameterNameByResource[resource];
+}
+
 function getQueryParameters(context: IExecuteFunctions, resource: string, itemIndex: number): IDataObject {
 	const query: IDataObject = {};
+	const advancedQueryJsonParameterName = getAdvancedQueryJsonParameterName(resource);
 
 	if (context.getNodeParameter('useRequestPagination', itemIndex, false) as boolean) {
 		addObjectValues(query, context.getNodeParameter('requestPagination', itemIndex, {}) as IDataObject);
@@ -1033,12 +1230,18 @@ function getQueryParameters(context: IExecuteFunctions, resource: string, itemIn
 
 	addObjectValues(query, getFilterParameters(context, resource, itemIndex));
 	addObjectValues(query, getFixedCollectionPairs(context, 'additionalQueryParameters.parameters', itemIndex));
-	addObjectValues(
-		query,
-		parseJsonObject((context.getNodeParameter('queryJson', itemIndex, '') as string) || '', 'Advanced Query JSON'),
-	);
 
-	return normalizeTimestampQueryParameters(query);
+	if (advancedQueryJsonParameterName) {
+		addObjectValues(
+			query,
+			parseJsonObject(
+				(context.getNodeParameter(advancedQueryJsonParameterName, itemIndex, '') as string) || '',
+				'Advanced Query JSON',
+			),
+		);
+	}
+
+	return ensureTimestampRange(normalizeTimestampQueryParameters(query));
 }
 
 function getDocumentListQueryParameters(context: IExecuteFunctions, itemIndex: number, queryParameters: IDataObject): IDataObject {
@@ -1057,11 +1260,19 @@ function getDocumentListQueryParameters(context: IExecuteFunctions, itemIndex: n
 
 function getBodyParameters(context: IExecuteFunctions, itemIndex: number): IDataObject {
 	const body: IDataObject = {};
+	const resource = context.getNodeParameter('resource', itemIndex) as string;
+	const advancedBodyJsonParameterName = getAdvancedBodyJsonParameterName(resource);
 	addObjectValues(body, getFixedCollectionPairs(context, 'bodyFields.fields', itemIndex));
-	addObjectValues(
-		body,
-		parseJsonObject((context.getNodeParameter('bodyJson', itemIndex, '') as string) || '', 'Advanced Body JSON'),
-	);
+
+	if (advancedBodyJsonParameterName) {
+		addObjectValues(
+			body,
+			parseJsonObject(
+				(context.getNodeParameter(advancedBodyJsonParameterName, itemIndex, '') as string) || '',
+				'Advanced Body JSON',
+			),
+		);
+	}
 
 	return body;
 }
