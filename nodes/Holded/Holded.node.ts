@@ -162,14 +162,81 @@ const advancedJsonProperty = (
 ): INodeProperties =>
 	jsonProperty(name, displayName, [resource], operations, placeholder, description);
 
-const documentTypeProperty = simpleStringProperty(
-	'documentType',
-	'Document Type',
-	['document'],
-	['list', 'get', 'create', 'update', 'delete'],
-	'Document type segment used by Holded, for example invoice, salesreceipt or estimate',
-	'invoice',
-);
+const documentTypeProperty: INodeProperties = {
+	displayName: 'Document Type',
+	name: 'documentType',
+	type: 'options',
+	default: 'invoice',
+	description: 'Commercial document type to manage in Holded',
+	displayOptions: {
+		show: {
+			resource: ['document'],
+			operation: ['list', 'get', 'create', 'update', 'delete'],
+		},
+	},
+	options: [
+		{
+			name: 'Credit Note',
+			value: 'creditnote',
+		},
+		{
+			name: 'Custom',
+			value: 'custom',
+		},
+		{
+			name: 'Estimate',
+			value: 'estimate',
+		},
+		{
+			name: 'Invoice',
+			value: 'invoice',
+		},
+		{
+			name: 'Proform',
+			value: 'proform',
+		},
+		{
+			name: 'Purchase',
+			value: 'purchase',
+		},
+		{
+			name: 'Purchase Order',
+			value: 'purchaseorder',
+		},
+		{
+			name: 'Purchase Refund',
+			value: 'purchaserefund',
+		},
+		{
+			name: 'Sales Order',
+			value: 'salesorder',
+		},
+		{
+			name: 'Sales Receipt',
+			value: 'salesreceipt',
+		},
+		{
+			name: 'Waybill',
+			value: 'waybill',
+		},
+	],
+};
+
+const customDocumentTypeProperty: INodeProperties = {
+	displayName: 'Custom Document Type',
+	name: 'customDocumentType',
+	type: 'string',
+	default: '',
+	placeholder: 'purchaserefund',
+	description: 'Custom Holded document type segment when "Document Type" is set to "Custom"',
+	displayOptions: {
+		show: {
+			resource: ['document'],
+			operation: ['list', 'get', 'create', 'update', 'delete'],
+			documentType: ['custom'],
+		},
+	},
+};
 
 const customMethodProperty: INodeProperties = {
 	displayName: 'HTTP Method',
@@ -596,6 +663,345 @@ const customApiOperationProperty: INodeProperties = {
 	options: [{ action: 'Send a custom API request', name: 'Send Request', value: 'request' }],
 };
 
+const documentContactIdProperty = simpleStringProperty(
+	'documentContactId',
+	'Contact ID',
+	['document'],
+	['create', 'update'],
+	'Holded contact ID for the invoice or estimate recipient',
+);
+
+const documentContactCodeProperty = simpleStringProperty(
+	'documentContactCode',
+	'Contact Code',
+	['document'],
+	['create', 'update'],
+	'NIF, CIF, VAT, or contact code. Used when Contact ID is empty.',
+);
+
+const documentContactNameProperty = simpleStringProperty(
+	'documentContactName',
+	'Contact Name',
+	['document'],
+	['create', 'update'],
+	'Contact name. Holded can use it to create or match a contact when Contact ID and Contact Code are empty.',
+);
+
+const documentContactEmailProperty = simpleStringProperty(
+	'documentContactEmail',
+	'Contact Email',
+	['document'],
+	['create', 'update'],
+	'Contact email for a new or matched contact',
+	'name@email.com',
+);
+
+const documentContactAddressProperty = simpleStringProperty(
+	'documentContactAddress',
+	'Contact Address',
+	['document'],
+	['create', 'update'],
+	'Billing address for a new or matched contact',
+);
+
+const documentContactCityProperty = simpleStringProperty(
+	'documentContactCity',
+	'Contact City',
+	['document'],
+	['create', 'update'],
+	'Billing city for a new or matched contact',
+);
+
+const documentContactPostalCodeProperty = simpleStringProperty(
+	'documentContactCp',
+	'Contact Postal Code',
+	['document'],
+	['create', 'update'],
+	'Billing postal code for a new or matched contact',
+);
+
+const documentContactProvinceProperty = simpleStringProperty(
+	'documentContactProvince',
+	'Contact Province',
+	['document'],
+	['create', 'update'],
+	'Billing province for a new or matched contact',
+);
+
+const documentContactCountryCodeProperty = simpleStringProperty(
+	'documentContactCountryCode',
+	'Contact Country Code',
+	['document'],
+	['create', 'update'],
+	'Billing country code for a new or matched contact, for example ES',
+	'ES',
+);
+
+const documentApplyContactDefaultsProperty: INodeProperties = {
+	displayName: 'Apply Contact Defaults',
+	name: 'documentApplyContactDefaults',
+	type: 'boolean',
+	default: true,
+	description: 'Whether Holded should apply the contact defaults to the document',
+	displayOptions: {
+		show: {
+			resource: ['document'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const documentIssueDateProperty = simpleStringProperty(
+	'documentIssueDate',
+	'Issue Date',
+	['document'],
+	['create', 'update'],
+	'Document issue date. Accepts YYYY-MM-DD, ISO date, Unix seconds, or milliseconds',
+	'2025-01-01',
+);
+
+const documentDueDateProperty = simpleStringProperty(
+	'documentDueDate',
+	'Due Date',
+	['document'],
+	['create', 'update'],
+	'Document due date. Accepts YYYY-MM-DD, ISO date, Unix seconds, or milliseconds',
+	'2025-01-31',
+);
+
+const documentCurrencyProperty: INodeProperties = {
+	displayName: 'Currency',
+	name: 'documentCurrency',
+	type: 'string',
+	default: '',
+	placeholder: 'EUR',
+	description: 'Currency code for the document, for example EUR or USD',
+	displayOptions: {
+		show: {
+			resource: ['document'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const documentNotesProperty = simpleStringProperty(
+	'documentNotes',
+	'Notes',
+	['document'],
+	['create', 'update'],
+	'Internal or customer-facing notes for the document',
+);
+
+const documentDescriptionProperty = simpleStringProperty(
+	'documentDescription',
+	'Description',
+	['document'],
+	['create', 'update'],
+	'Short description or concept for the document',
+);
+
+const documentLanguageProperty = simpleStringProperty(
+	'documentLanguage',
+	'Language',
+	['document'],
+	['create', 'update'],
+	'Language code for the document, for example es or en',
+	'es',
+);
+
+const documentNumberProperty = simpleStringProperty(
+	'documentInvoiceNum',
+	'Document Number',
+	['document'],
+	['create'],
+	'Optional document number. Leave empty to let Holded assign it.',
+);
+
+const documentNumberingSeriesProperty = simpleStringProperty(
+	'documentNumSerieId',
+	'Numbering Series ID',
+	['document'],
+	['create'],
+	'Holded numbering series ID to use for this document',
+);
+
+const documentPaymentMethodProperty = simpleStringProperty(
+	'documentPaymentMethodId',
+	'Payment Method ID',
+	['document'],
+	['create'],
+	'Holded payment method ID for this document',
+);
+
+const documentSalesChannelProperty = simpleStringProperty(
+	'documentSalesChannelId',
+	'Sales Channel ID',
+	['document'],
+	['create', 'update'],
+	'Holded sales channel ID for this document',
+);
+
+const documentDesignProperty = simpleStringProperty(
+	'documentDesignId',
+	'Design ID',
+	['document'],
+	['create'],
+	'Holded design/template ID for this document',
+);
+
+const documentWarehouseProperty = simpleStringProperty(
+	'documentWarehouseId',
+	'Warehouse ID',
+	['document'],
+	['create', 'update'],
+	'Warehouse ID for sales orders, purchase orders, or waybills',
+);
+
+const documentTagsProperty = simpleStringProperty(
+	'documentTags',
+	'Tags',
+	['document'],
+	['create', 'update'],
+	'Comma-separated tags to assign to this document',
+	'urgent, recurring',
+);
+
+const documentShippingAddressProperty = simpleStringProperty(
+	'documentShippingAddress',
+	'Shipping Address',
+	['document'],
+	['create', 'update'],
+	'Shipping address for this document',
+);
+
+const documentShippingPostalCodeProperty = simpleStringProperty(
+	'documentShippingPostalCode',
+	'Shipping Postal Code',
+	['document'],
+	['create', 'update'],
+	'Shipping postal code for this document',
+);
+
+const documentShippingCityProperty = simpleStringProperty(
+	'documentShippingCity',
+	'Shipping City',
+	['document'],
+	['create', 'update'],
+	'Shipping city for this document',
+);
+
+const documentShippingProvinceProperty = simpleStringProperty(
+	'documentShippingProvince',
+	'Shipping Province',
+	['document'],
+	['create', 'update'],
+	'Shipping province for this document',
+);
+
+const documentShippingCountryProperty = simpleStringProperty(
+	'documentShippingCountry',
+	'Shipping Country',
+	['document'],
+	['create', 'update'],
+	'Shipping country for this document',
+);
+
+const documentApproveProperty: INodeProperties = {
+	displayName: 'Approve Document',
+	name: 'documentApprove',
+	type: 'boolean',
+	default: false,
+	description: 'Whether Holded should approve the document immediately if the endpoint supports it',
+	displayOptions: {
+		show: {
+			resource: ['document'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const documentItemsProperty: INodeProperties = {
+	displayName: 'Line Items',
+	name: 'documentItems',
+	type: 'fixedCollection',
+	placeholder: 'Add Line Item',
+	default: {},
+	typeOptions: {
+		multipleValues: true,
+	},
+	description: 'Invoice or estimate lines. Add at least one line item when creating a commercial document.',
+	displayOptions: {
+		show: {
+			resource: ['document'],
+			operation: ['create', 'update'],
+		},
+	},
+	options: [
+		{
+			displayName: 'Line Item',
+			name: 'items',
+			values: [
+				{
+					displayName: 'Description',
+					name: 'desc',
+					type: 'string',
+					default: '',
+					description: 'Optional line item description',
+				},
+				{
+					displayName: 'Discount (%)',
+					name: 'discount',
+					type: 'number',
+					default: 0,
+					description: 'Discount percentage for this line item',
+				},
+				{
+					displayName: 'Name',
+					name: 'name',
+					type: 'string',
+					default: '',
+					description: 'Line item title',
+				},
+				{
+					displayName: 'Product ID',
+					name: 'productId',
+					type: 'string',
+					default: '',
+					description: 'Optional Holded product ID for this line item',
+				},
+				{
+					displayName: 'SKU',
+					name: 'sku',
+					type: 'string',
+					default: '',
+					description: 'Optional product or service reference',
+				},
+				{
+					displayName: 'Tax (%)',
+					name: 'tax',
+					type: 'number',
+					default: 21,
+					description: 'Tax percentage for this line item',
+				},
+				{
+					displayName: 'Unit Price',
+					name: 'subtotal',
+					type: 'number',
+					default: 0,
+					description: 'Unit price before tax',
+				},
+				{
+					displayName: 'Units',
+					name: 'units',
+					type: 'number',
+					default: 1,
+					description: 'Quantity for this line item',
+				},
+			],
+		},
+	],
+};
+
 const contactFiltersProperty = filterCollectionProperty('contactFilters', ['contact'], [
 	{
 		displayName: 'Email',
@@ -862,7 +1268,38 @@ const properties: INodeProperties[] = [
 		'The Holded document ID',
 	),
 	documentTypeProperty,
+	customDocumentTypeProperty,
 	customMethodProperty,
+	documentContactIdProperty,
+	documentContactCodeProperty,
+	documentContactNameProperty,
+	documentContactEmailProperty,
+	documentContactAddressProperty,
+	documentContactCityProperty,
+	documentContactPostalCodeProperty,
+	documentContactProvinceProperty,
+	documentContactCountryCodeProperty,
+	documentApplyContactDefaultsProperty,
+	documentIssueDateProperty,
+	documentDueDateProperty,
+	documentCurrencyProperty,
+	documentNotesProperty,
+	documentDescriptionProperty,
+	documentLanguageProperty,
+	documentNumberProperty,
+	documentNumberingSeriesProperty,
+	documentPaymentMethodProperty,
+	documentSalesChannelProperty,
+	documentDesignProperty,
+	documentWarehouseProperty,
+	documentTagsProperty,
+	documentShippingAddressProperty,
+	documentShippingPostalCodeProperty,
+	documentShippingCityProperty,
+	documentShippingProvinceProperty,
+	documentShippingCountryProperty,
+	documentApproveProperty,
+	documentItemsProperty,
 	returnAllProperty,
 	limitProperty,
 	useRequestPaginationProperty,
@@ -1258,10 +1695,188 @@ function getDocumentListQueryParameters(context: IExecuteFunctions, itemIndex: n
 	return documentQueryParameters;
 }
 
+function getDocumentStructuredBody(context: IExecuteFunctions, itemIndex: number): IDataObject {
+	const body: IDataObject = {};
+	const operation = context.getNodeParameter('operation', itemIndex) as string;
+	const contactId = (context.getNodeParameter('documentContactId', itemIndex, '') as string).trim();
+	const contactCode = (context.getNodeParameter('documentContactCode', itemIndex, '') as string).trim();
+	const contactName = (context.getNodeParameter('documentContactName', itemIndex, '') as string).trim();
+	const contactEmail = (context.getNodeParameter('documentContactEmail', itemIndex, '') as string).trim();
+	const contactAddress = (context.getNodeParameter('documentContactAddress', itemIndex, '') as string).trim();
+	const contactCity = (context.getNodeParameter('documentContactCity', itemIndex, '') as string).trim();
+	const contactCp = (context.getNodeParameter('documentContactCp', itemIndex, '') as string).trim();
+	const contactProvince = (context.getNodeParameter('documentContactProvince', itemIndex, '') as string).trim();
+	const contactCountryCode = (context.getNodeParameter('documentContactCountryCode', itemIndex, '') as string).trim();
+	const applyContactDefaults = context.getNodeParameter('documentApplyContactDefaults', itemIndex, true) as boolean;
+	const issueDate = (context.getNodeParameter('documentIssueDate', itemIndex, '') as string).trim();
+	const dueDate = (context.getNodeParameter('documentDueDate', itemIndex, '') as string).trim();
+	const currency = (context.getNodeParameter('documentCurrency', itemIndex, '') as string).trim();
+	const notes = (context.getNodeParameter('documentNotes', itemIndex, '') as string).trim();
+	const description = (context.getNodeParameter('documentDescription', itemIndex, '') as string).trim();
+	const language = (context.getNodeParameter('documentLanguage', itemIndex, '') as string).trim();
+	const invoiceNum = (context.getNodeParameter('documentInvoiceNum', itemIndex, '') as string).trim();
+	const numSerieId = (context.getNodeParameter('documentNumSerieId', itemIndex, '') as string).trim();
+	const paymentMethodId = (context.getNodeParameter('documentPaymentMethodId', itemIndex, '') as string).trim();
+	const salesChannelId = (context.getNodeParameter('documentSalesChannelId', itemIndex, '') as string).trim();
+	const designId = (context.getNodeParameter('documentDesignId', itemIndex, '') as string).trim();
+	const warehouseId = (context.getNodeParameter('documentWarehouseId', itemIndex, '') as string).trim();
+	const tags = (context.getNodeParameter('documentTags', itemIndex, '') as string).trim();
+	const shippingAddress = (context.getNodeParameter('documentShippingAddress', itemIndex, '') as string).trim();
+	const shippingPostalCode = (context.getNodeParameter('documentShippingPostalCode', itemIndex, '') as string).trim();
+	const shippingCity = (context.getNodeParameter('documentShippingCity', itemIndex, '') as string).trim();
+	const shippingProvince = (context.getNodeParameter('documentShippingProvince', itemIndex, '') as string).trim();
+	const shippingCountry = (context.getNodeParameter('documentShippingCountry', itemIndex, '') as string).trim();
+	const approve = context.getNodeParameter('documentApprove', itemIndex, false) as boolean;
+	const lineItems = context.getNodeParameter('documentItems.items', itemIndex, []) as IDataObject[];
+
+	if (contactId) {
+		body.contactId = contactId;
+	}
+
+	if (contactCode) {
+		body.contactCode = contactCode;
+	}
+
+	if (contactName) {
+		body.contactName = contactName;
+	}
+
+	if (contactEmail) {
+		body.contactEmail = contactEmail;
+	}
+
+	if (contactAddress) {
+		body.contactAddress = contactAddress;
+	}
+
+	if (contactCity) {
+		body.contactCity = contactCity;
+	}
+
+	if (contactCp) {
+		body.contactCp = contactCp;
+	}
+
+	if (contactProvince) {
+		body.contactProvince = contactProvince;
+	}
+
+	if (contactCountryCode) {
+		body.contactCountryCode = contactCountryCode;
+	}
+
+	if (!applyContactDefaults) {
+		body.applyContactDefaults = false;
+	}
+
+	if (issueDate) {
+		body.date = normalizeUnixTimestamp(issueDate, 'Issue Date');
+	} else if (operation === 'create') {
+		body.date = Math.floor(Date.now() / 1000);
+	}
+
+	if (dueDate) {
+		body.dueDate = normalizeUnixTimestamp(dueDate, 'Due Date');
+	}
+
+	if (currency) {
+		body.currency = currency;
+	}
+
+	if (notes) {
+		body.notes = notes;
+	}
+
+	if (description) {
+		body.desc = description;
+	}
+
+	if (language) {
+		body.language = language;
+	}
+
+	if (invoiceNum) {
+		body.invoiceNum = invoiceNum;
+	}
+
+	if (numSerieId) {
+		body.numSerieId = numSerieId;
+	}
+
+	if (paymentMethodId) {
+		body.paymentMethodId = paymentMethodId;
+	}
+
+	if (salesChannelId) {
+		body.salesChannelId = salesChannelId;
+	}
+
+	if (designId) {
+		body.designId = designId;
+	}
+
+	if (warehouseId) {
+		body.warehouseId = warehouseId;
+	}
+
+	if (tags) {
+		body.tags = tags
+			.split(',')
+			.map((tag) => tag.trim())
+			.filter((tag) => tag.length > 0);
+	}
+
+	if (shippingAddress) {
+		body.shippingAddress = shippingAddress;
+	}
+
+	if (shippingPostalCode) {
+		body.shippingPostalCode = shippingPostalCode;
+	}
+
+	if (shippingCity) {
+		body.shippingCity = shippingCity;
+	}
+
+	if (shippingProvince) {
+		body.shippingProvince = shippingProvince;
+	}
+
+	if (shippingCountry) {
+		body.shippingCountry = shippingCountry;
+	}
+
+	if (approve) {
+		body.approveDoc = approve;
+	}
+
+	if (lineItems.length > 0) {
+		body.items = lineItems
+			.map((lineItem) => {
+				const normalizedItem: IDataObject = {};
+				addObjectValues(normalizedItem, lineItem);
+				return normalizedItem;
+			})
+			.filter((lineItem) => Object.keys(lineItem).length > 0);
+	}
+
+	if (operation === 'create' && !contactId && !contactCode && !contactName) {
+		throw new ApplicationError('Document creation requires Contact ID, Contact Code, or Contact Name');
+	}
+
+	return body;
+}
+
 function getBodyParameters(context: IExecuteFunctions, itemIndex: number): IDataObject {
 	const body: IDataObject = {};
 	const resource = context.getNodeParameter('resource', itemIndex) as string;
+	const operation = context.getNodeParameter('operation', itemIndex) as string;
 	const advancedBodyJsonParameterName = getAdvancedBodyJsonParameterName(resource);
+
+	if (resource === 'document' && ['create', 'update'].includes(operation)) {
+		addObjectValues(body, getDocumentStructuredBody(context, itemIndex));
+	}
+
 	addObjectValues(body, getFixedCollectionPairs(context, 'bodyFields.fields', itemIndex));
 
 	if (advancedBodyJsonParameterName) {
@@ -1330,6 +1945,16 @@ function getCustomApiPath(context: IExecuteFunctions, itemIndex: number): string
 	}
 
 	return ensureLeadingSlash(customPath);
+}
+
+function getDocumentType(context: IExecuteFunctions, itemIndex: number): string {
+	const documentType = context.getNodeParameter('documentType', itemIndex) as string;
+
+	if (documentType === 'custom') {
+		return getRequiredStringParameter(context, 'customDocumentType', itemIndex, 'Custom Document Type');
+	}
+
+	return documentType.trim();
 }
 
 function normalizeOutput(entry: unknown): IDataObject {
@@ -1462,7 +2087,7 @@ function buildRequestOptions(
 		}
 
 		case 'document': {
-			const documentType = getRequiredStringParameter(context, 'documentType', itemIndex, 'Document Type');
+			const documentType = getDocumentType(context, itemIndex);
 			const basePath = `/api/invoicing/v1/documents/${encodeURIComponent(documentType)}`;
 
 			if (operation === 'list') {
@@ -1648,7 +2273,7 @@ export class Holded implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
-		description: 'Consume the Holded API',
+		description: 'Manage Holded contacts, documents, payments, projects, tasks, leads, and custom API requests',
 		defaults: {
 			name: 'Holded',
 		},
