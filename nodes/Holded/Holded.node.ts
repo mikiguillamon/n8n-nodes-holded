@@ -459,6 +459,498 @@ const bodyFieldsProperty: INodeProperties = {
 	],
 };
 
+const contactNameProperty = simpleStringProperty(
+	'contactName',
+	'Name',
+	['contact'],
+	['create', 'update'],
+	'Contact or company name',
+);
+
+const contactCodeProperty = simpleStringProperty(
+	'contactCode',
+	'Code',
+	['contact'],
+	['create', 'update'],
+	'Internal contact code',
+);
+
+const contactTradeNameProperty = simpleStringProperty(
+	'contactTradeName',
+	'Trade Name',
+	['contact'],
+	['update'],
+	'Commercial or trade name',
+);
+
+const contactEmailProperty = simpleStringProperty(
+	'contactEmail',
+	'Email',
+	['contact'],
+	['create', 'update'],
+	'Primary contact email',
+	'name@email.com',
+);
+
+const contactMobileProperty = simpleStringProperty(
+	'contactMobile',
+	'Mobile',
+	['contact'],
+	['create', 'update'],
+	'Primary mobile phone',
+);
+
+const contactPhoneProperty = simpleStringProperty(
+	'contactPhone',
+	'Phone',
+	['contact'],
+	['create', 'update'],
+	'Primary phone number',
+);
+
+const contactTypeProperty: INodeProperties = {
+	displayName: 'Contact Type',
+	name: 'contactType',
+	type: 'options',
+	default: 'client',
+	description: 'Business role of the contact',
+	displayOptions: {
+		show: {
+			resource: ['contact'],
+			operation: ['create', 'update'],
+		},
+	},
+	options: [
+		{ name: 'Client', value: 'client' },
+		{ name: 'Creditor', value: 'creditor' },
+		{ name: 'Debtor', value: 'debtor' },
+		{ name: 'Lead', value: 'lead' },
+		{ name: 'Supplier', value: 'supplier' },
+	],
+};
+
+const contactIsPersonProperty: INodeProperties = {
+	displayName: 'Is Person',
+	name: 'contactIsPerson',
+	type: 'boolean',
+	default: false,
+	description: 'Whether the contact should be created as a person instead of a company',
+	displayOptions: {
+		show: {
+			resource: ['contact'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const contactIbanProperty = simpleStringProperty(
+	'contactIban',
+	'IBAN',
+	['contact'],
+	['create', 'update'],
+	'Bank account IBAN',
+);
+
+const contactSwiftProperty = simpleStringProperty(
+	'contactSwift',
+	'SWIFT',
+	['contact'],
+	['create', 'update'],
+	'Bank SWIFT code',
+);
+
+const contactSepaRefProperty = simpleStringProperty(
+	'contactSepaRef',
+	'SEPA Reference',
+	['contact'],
+	['create', 'update'],
+	'SEPA mandate reference',
+);
+
+const contactGroupIdProperty = simpleStringProperty(
+	'contactGroupId',
+	'Group ID',
+	['contact'],
+	['create', 'update'],
+	'Holded contact group ID',
+);
+
+const contactTaxOperationProperty: INodeProperties = {
+	displayName: 'Tax Operation',
+	name: 'contactTaxOperation',
+	type: 'options',
+	default: 'general',
+	description: 'Tax operation for Spanish fiscal setup',
+	displayOptions: {
+		show: {
+			resource: ['contact'],
+			operation: ['create', 'update'],
+		},
+	},
+	options: [
+		{ name: 'Exento', value: 'exento' },
+		{ name: 'General', value: 'general' },
+		{ name: 'Import/Export', value: 'impexp' },
+		{ name: 'Intra', value: 'intra' },
+		{ name: 'No Sujeto', value: 'nosujeto' },
+		{ name: 'Recargo Equivalencia', value: 'receq' },
+	],
+};
+
+const contactNoteProperty = simpleStringProperty(
+	'contactNote',
+	'Note',
+	['contact'],
+	['create', 'update'],
+	'Internal note for this contact',
+);
+
+const productKindProperty = simpleStringProperty(
+	'productKind',
+	'Kind',
+	['product'],
+	['create', 'update'],
+	'Product kind used by Holded',
+);
+
+const productNameProperty = simpleStringProperty(
+	'productName',
+	'Name',
+	['product'],
+	['create', 'update'],
+	'Product name',
+);
+
+const productDescriptionProperty = simpleStringProperty(
+	'productDescription',
+	'Description',
+	['product'],
+	['create', 'update'],
+	'Product description',
+);
+
+const productPriceProperty: INodeProperties = {
+	displayName: 'Price',
+	name: 'productPrice',
+	type: 'number',
+	default: 0,
+	description: 'Sales price for the product',
+	displayOptions: {
+		show: {
+			resource: ['product'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const productTaxProperty: INodeProperties = {
+	displayName: 'Tax (%)',
+	name: 'productTax',
+	type: 'number',
+	default: 21,
+	description: 'Tax percentage for the product',
+	displayOptions: {
+		show: {
+			resource: ['product'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const productCostProperty: INodeProperties = {
+	displayName: 'Cost',
+	name: 'productCost',
+	type: 'number',
+	default: 0,
+	description: 'Cost price for the product',
+	displayOptions: {
+		show: {
+			resource: ['product'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const productPurchasePriceProperty: INodeProperties = {
+	displayName: 'Purchase Price',
+	name: 'productPurchasePrice',
+	type: 'number',
+	default: 0,
+	description: 'Purchase price registered in Holded',
+	displayOptions: {
+		show: {
+			resource: ['product'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const productBarcodeProperty = simpleStringProperty(
+	'productBarcode',
+	'Barcode',
+	['product'],
+	['create', 'update'],
+	'Product barcode',
+);
+
+const productSkuProperty = simpleStringProperty(
+	'productSku',
+	'SKU',
+	['product'],
+	['create', 'update'],
+	'Product SKU or reference',
+);
+
+const productWeightProperty: INodeProperties = {
+	displayName: 'Weight',
+	name: 'productWeight',
+	type: 'number',
+	default: 0,
+	description: 'Product weight',
+	displayOptions: {
+		show: {
+			resource: ['product'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const productStockProperty: INodeProperties = {
+	displayName: 'Stock',
+	name: 'productStock',
+	type: 'number',
+	default: 0,
+	description: 'Initial stock for new products',
+	displayOptions: {
+		show: {
+			resource: ['product'],
+			operation: ['create'],
+		},
+	},
+};
+
+const productTagsProperty = simpleStringProperty(
+	'productTags',
+	'Tags',
+	['product'],
+	['create', 'update'],
+	'Comma-separated product tags',
+	'featured, online',
+);
+
+const serviceNameProperty = simpleStringProperty(
+	'serviceName',
+	'Name',
+	['service'],
+	['create', 'update'],
+	'Service name',
+);
+
+const serviceDescriptionProperty = simpleStringProperty(
+	'serviceDescription',
+	'Description',
+	['service'],
+	['create', 'update'],
+	'Service description',
+);
+
+const serviceTagsProperty = simpleStringProperty(
+	'serviceTags',
+	'Tags',
+	['service'],
+	['create', 'update'],
+	'Comma-separated service tags',
+	'retainer, consulting',
+);
+
+const serviceTaxProperty: INodeProperties = {
+	displayName: 'Tax (%)',
+	name: 'serviceTax',
+	type: 'number',
+	default: 21,
+	description: 'Tax percentage for the service',
+	displayOptions: {
+		show: {
+			resource: ['service'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const serviceSubtotalProperty: INodeProperties = {
+	displayName: 'Subtotal',
+	name: 'serviceSubtotal',
+	type: 'number',
+	default: 0,
+	description: 'Base price for the service before tax',
+	displayOptions: {
+		show: {
+			resource: ['service'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const serviceSalesChannelIdProperty = simpleStringProperty(
+	'serviceSalesChannelId',
+	'Sales Channel ID',
+	['service'],
+	['create', 'update'],
+	'Holded sales channel ID for this service',
+);
+
+const serviceCostProperty: INodeProperties = {
+	displayName: 'Cost',
+	name: 'serviceCost',
+	type: 'number',
+	default: 0,
+	description: 'Cost for delivering the service',
+	displayOptions: {
+		show: {
+			resource: ['service'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const paymentBankIdProperty = simpleStringProperty(
+	'paymentBankId',
+	'Bank ID',
+	['payment'],
+	['create', 'update'],
+	'Holded bank or treasury account ID',
+);
+
+const paymentContactIdProperty = simpleStringProperty(
+	'paymentContactId',
+	'Contact ID',
+	['payment'],
+	['create', 'update'],
+	'Holded contact ID for the payment',
+);
+
+const paymentAmountProperty: INodeProperties = {
+	displayName: 'Amount',
+	name: 'paymentAmount',
+	type: 'number',
+	default: 0,
+	description: 'Payment amount',
+	displayOptions: {
+		show: {
+			resource: ['payment'],
+			operation: ['create', 'update'],
+		},
+	},
+};
+
+const paymentDescriptionProperty = simpleStringProperty(
+	'paymentDescription',
+	'Description',
+	['payment'],
+	['create', 'update'],
+	'Description for the payment entry',
+);
+
+const paymentDateProperty = simpleStringProperty(
+	'paymentDate',
+	'Date',
+	['payment'],
+	['create', 'update'],
+	'Payment date. Accepts YYYY-MM-DD, ISO date, Unix seconds, or milliseconds',
+	'2025-01-01',
+);
+
+const projectNameProperty = simpleStringProperty(
+	'projectName',
+	'Name',
+	['project'],
+	['create', 'update'],
+	'Project name',
+);
+
+const projectDescriptionProperty = simpleStringProperty(
+	'projectDescription',
+	'Description',
+	['project'],
+	['create', 'update'],
+	'Project description',
+);
+
+const projectContactNameProperty = simpleStringProperty(
+	'projectContactName',
+	'Contact Name',
+	['project'],
+	['update'],
+	'Contact or client name for the project',
+);
+
+const projectStartDateProperty = simpleStringProperty(
+	'projectDate',
+	'Start Date',
+	['project'],
+	['update'],
+	'Project start date. Accepts YYYY-MM-DD, ISO date, Unix seconds, or milliseconds',
+);
+
+const projectDueDateProperty = simpleStringProperty(
+	'projectDueDate',
+	'Due Date',
+	['project'],
+	['update'],
+	'Project due date. Accepts YYYY-MM-DD, ISO date, Unix seconds, or milliseconds',
+);
+
+const projectStatusProperty: INodeProperties = {
+	displayName: 'Status',
+	name: 'projectStatus',
+	type: 'number',
+	default: 0,
+	description: 'Numeric project status used by Holded',
+	displayOptions: {
+		show: {
+			resource: ['project'],
+			operation: ['update'],
+		},
+	},
+};
+
+const projectBillableProperty: INodeProperties = {
+	displayName: 'Billable',
+	name: 'projectBillable',
+	type: 'number',
+	default: 0,
+	description: 'Whether the project is billable in Holded',
+	displayOptions: {
+		show: {
+			resource: ['project'],
+			operation: ['update'],
+		},
+	},
+};
+
+const projectPriceProperty: INodeProperties = {
+	displayName: 'Price',
+	name: 'projectPrice',
+	type: 'number',
+	default: 0,
+	description: 'Project price',
+	displayOptions: {
+		show: {
+			resource: ['project'],
+			operation: ['update'],
+		},
+	},
+};
+
+const projectTagsProperty = simpleStringProperty(
+	'projectTags',
+	'Tags',
+	['project'],
+	['update'],
+	'Comma-separated project tags',
+	'client, implementation',
+);
+
 const contactOperationProperty: INodeProperties = {
 	displayName: 'Operation',
 	name: 'operation',
@@ -1004,12 +1496,11 @@ const documentItemsProperty: INodeProperties = {
 
 const contactFiltersProperty = filterCollectionProperty('contactFilters', ['contact'], [
 	{
-		displayName: 'Email',
-		name: 'email',
+		displayName: 'Mobile',
+		name: 'mobile',
 		type: 'string',
 		default: '',
-		placeholder: 'name@email.com',
-		description: 'Filter by contact email',
+		description: 'Filter by contact mobile phone',
 	},
 	{
 		displayName: 'Phone',
@@ -1019,61 +1510,18 @@ const contactFiltersProperty = filterCollectionProperty('contactFilters', ['cont
 		description: 'Filter by contact phone',
 	},
 	{
-		displayName: 'Mobile',
-		name: 'mobile',
+		displayName: 'Custom IDs',
+		name: 'customId',
 		type: 'string',
 		default: '',
-		description: 'Filter by contact mobile phone',
-	},
-	{
-		displayName: 'Code',
-		name: 'code',
-		type: 'string',
-		default: '',
-		description: 'Filter by contact code',
-	},
-	{
-		displayName: 'Name',
-		name: 'name',
-		type: 'string',
-		default: '',
-		description: 'Filter by contact name',
+			placeholder: 'ID-1,ID-2',
+		description: 'Comma-separated custom IDs to match',
 	},
 ]);
 
-const productFiltersProperty = filterCollectionProperty('productFilters', ['product'], [
-	{
-		displayName: 'SKU',
-		name: 'sku',
-		type: 'string',
-		default: '',
-		description: 'Filter by product SKU',
-	},
-	{
-		displayName: 'Barcode',
-		name: 'barcode',
-		type: 'string',
-		default: '',
-		description: 'Filter by product barcode',
-	},
-	{
-		displayName: 'Name',
-		name: 'name',
-		type: 'string',
-		default: '',
-		description: 'Filter by product name',
-	},
-]);
+const productFiltersProperty = filterCollectionProperty('productFilters', ['product'], []);
 
-const serviceFiltersProperty = filterCollectionProperty('serviceFilters', ['service'], [
-	{
-		displayName: 'Name',
-		name: 'name',
-		type: 'string',
-		default: '',
-		description: 'Filter by service name',
-	},
-]);
+const serviceFiltersProperty = filterCollectionProperty('serviceFilters', ['service'], []);
 
 const documentFiltersProperty = filterCollectionProperty('documentFilters', ['document'], [
 	{
@@ -1182,63 +1630,11 @@ const paymentFiltersProperty = filterCollectionProperty('paymentFilters', ['paym
 	},
 ]);
 
-const projectFiltersProperty = filterCollectionProperty('projectFilters', ['project'], [
-	{
-		displayName: 'Client ID',
-		name: 'clientid',
-		type: 'string',
-		default: '',
-		description: 'Filter by client/contact ID',
-	},
-	{
-		displayName: 'Status',
-		name: 'status',
-		type: 'string',
-		default: '',
-		description: 'Filter by project status',
-	},
-]);
+const projectFiltersProperty = filterCollectionProperty('projectFilters', ['project'], []);
 
-const taskFiltersProperty = filterCollectionProperty('taskFilters', ['task'], [
-	{
-		displayName: 'Project ID',
-		name: 'projectid',
-		type: 'string',
-		default: '',
-		description: 'Filter by project ID',
-	},
-	{
-		displayName: 'Status',
-		name: 'status',
-		type: 'string',
-		default: '',
-		description: 'Filter by task status',
-	},
-]);
+const taskFiltersProperty = filterCollectionProperty('taskFilters', ['task'], []);
 
-const leadFiltersProperty = filterCollectionProperty('leadFilters', ['lead'], [
-	{
-		displayName: 'Contact ID',
-		name: 'contactid',
-		type: 'string',
-		default: '',
-		description: 'Filter by contact ID',
-	},
-	{
-		displayName: 'Stage ID',
-		name: 'stageid',
-		type: 'string',
-		default: '',
-		description: 'Filter by CRM stage ID',
-	},
-	{
-		displayName: 'Status',
-		name: 'status',
-		type: 'string',
-		default: '',
-		description: 'Filter by lead status',
-	},
-]);
+const leadFiltersProperty = filterCollectionProperty('leadFilters', ['lead'], []);
 
 const properties: INodeProperties[] = [
 	resourceProperty,
@@ -1253,6 +1649,53 @@ const properties: INodeProperties[] = [
 	bookingOperationProperty,
 	accountingAccountOperationProperty,
 	customApiOperationProperty,
+	contactNameProperty,
+	contactCodeProperty,
+	contactTradeNameProperty,
+	contactEmailProperty,
+	contactMobileProperty,
+	contactPhoneProperty,
+	contactTypeProperty,
+	contactIsPersonProperty,
+	contactIbanProperty,
+	contactSwiftProperty,
+	contactSepaRefProperty,
+	contactGroupIdProperty,
+	contactTaxOperationProperty,
+	contactNoteProperty,
+	productKindProperty,
+	productNameProperty,
+	productDescriptionProperty,
+	productPriceProperty,
+	productTaxProperty,
+	productCostProperty,
+	productPurchasePriceProperty,
+	productBarcodeProperty,
+	productSkuProperty,
+	productWeightProperty,
+	productStockProperty,
+	productTagsProperty,
+	serviceNameProperty,
+	serviceDescriptionProperty,
+	serviceTagsProperty,
+	serviceTaxProperty,
+	serviceSubtotalProperty,
+	serviceSalesChannelIdProperty,
+	serviceCostProperty,
+	paymentBankIdProperty,
+	paymentContactIdProperty,
+	paymentAmountProperty,
+	paymentDescriptionProperty,
+	paymentDateProperty,
+	projectNameProperty,
+	projectDescriptionProperty,
+	projectContactNameProperty,
+	projectStartDateProperty,
+	projectDueDateProperty,
+	projectStatusProperty,
+	projectBillableProperty,
+	projectPriceProperty,
+	projectTagsProperty,
 	idProperty('contactId', 'Contact ID', 'contact', ['get', 'update', 'delete'], 'The Holded contact ID'),
 	idProperty('productId', 'Product ID', 'product', ['get', 'update', 'delete'], 'The Holded product ID'),
 	idProperty('serviceId', 'Service ID', 'service', ['get', 'update', 'delete'], 'The Holded service ID'),
@@ -1557,6 +2000,13 @@ function getFilterParameters(context: IExecuteFunctions, resource: string, itemI
 	const filters = context.getNodeParameter(filterParameterName, itemIndex, {}) as IDataObject;
 	const query: IDataObject = {};
 	addObjectValues(query, filters);
+
+	if (resource === 'contact' && typeof query.customId === 'string') {
+		query.customId = query.customId
+			.split(',')
+			.map((customId) => customId.trim())
+			.filter((customId) => customId.length > 0);
+	}
 
 	return query;
 }
@@ -1867,14 +2317,214 @@ function getDocumentStructuredBody(context: IExecuteFunctions, itemIndex: number
 	return body;
 }
 
+function splitTags(value: string): string[] {
+	return value
+		.split(',')
+		.map((tag) => tag.trim())
+		.filter((tag) => tag.length > 0);
+}
+
+function getContactStructuredBody(context: IExecuteFunctions, itemIndex: number): IDataObject {
+	const body: IDataObject = {};
+	const name = (context.getNodeParameter('contactName', itemIndex, '') as string).trim();
+	const code = (context.getNodeParameter('contactCode', itemIndex, '') as string).trim();
+	const tradeName = (context.getNodeParameter('contactTradeName', itemIndex, '') as string).trim();
+	const email = (context.getNodeParameter('contactEmail', itemIndex, '') as string).trim();
+	const mobile = (context.getNodeParameter('contactMobile', itemIndex, '') as string).trim();
+	const phone = (context.getNodeParameter('contactPhone', itemIndex, '') as string).trim();
+	const type = context.getNodeParameter('contactType', itemIndex, '') as string;
+	const isperson = context.getNodeParameter('contactIsPerson', itemIndex, false) as boolean;
+	const iban = (context.getNodeParameter('contactIban', itemIndex, '') as string).trim();
+	const swift = (context.getNodeParameter('contactSwift', itemIndex, '') as string).trim();
+	const sepaRef = (context.getNodeParameter('contactSepaRef', itemIndex, '') as string).trim();
+	const groupId = (context.getNodeParameter('contactGroupId', itemIndex, '') as string).trim();
+	const taxOperation = context.getNodeParameter('contactTaxOperation', itemIndex, '') as string;
+	const note = (context.getNodeParameter('contactNote', itemIndex, '') as string).trim();
+
+	addObjectValues(body, {
+		code,
+		email,
+		groupId,
+		iban,
+		mobile,
+		name,
+		note,
+		phone,
+		sepaRef,
+		swift,
+		taxOperation,
+		tradeName,
+		type,
+	});
+
+	if (isperson) {
+		body.isperson = true;
+	}
+
+	return body;
+}
+
+function getProductStructuredBody(context: IExecuteFunctions, itemIndex: number): IDataObject {
+	const operation = context.getNodeParameter('operation', itemIndex) as string;
+	const body: IDataObject = {};
+	const kind = (context.getNodeParameter('productKind', itemIndex, '') as string).trim();
+	const name = (context.getNodeParameter('productName', itemIndex, '') as string).trim();
+	const desc = (context.getNodeParameter('productDescription', itemIndex, '') as string).trim();
+	const price = context.getNodeParameter('productPrice', itemIndex, 0) as number;
+	const tax = context.getNodeParameter('productTax', itemIndex, 21) as number;
+	const cost = context.getNodeParameter('productCost', itemIndex, 0) as number;
+	const purchasePrice = context.getNodeParameter('productPurchasePrice', itemIndex, 0) as number;
+	const barcode = (context.getNodeParameter('productBarcode', itemIndex, '') as string).trim();
+	const sku = (context.getNodeParameter('productSku', itemIndex, '') as string).trim();
+	const weight = context.getNodeParameter('productWeight', itemIndex, 0) as number;
+	const stock = context.getNodeParameter('productStock', itemIndex, 0) as number;
+	const tags = (context.getNodeParameter('productTags', itemIndex, '') as string).trim();
+
+	addObjectValues(body, {
+		barcode,
+		cost,
+		desc,
+		kind,
+		name,
+		purchasePrice,
+		sku,
+		tax,
+		weight,
+	});
+
+	if (price !== 0 || operation === 'create') {
+		body[operation === 'create' ? 'price' : 'subtotal'] = price;
+	}
+
+	if (operation === 'create' && stock !== 0) {
+		body.stock = stock;
+	}
+
+	if (tags) {
+		body.tags = splitTags(tags);
+	}
+
+	return body;
+}
+
+function getServiceStructuredBody(context: IExecuteFunctions, itemIndex: number): IDataObject {
+	const body: IDataObject = {};
+	const name = (context.getNodeParameter('serviceName', itemIndex, '') as string).trim();
+	const desc = (context.getNodeParameter('serviceDescription', itemIndex, '') as string).trim();
+	const tags = (context.getNodeParameter('serviceTags', itemIndex, '') as string).trim();
+	const tax = context.getNodeParameter('serviceTax', itemIndex, 21) as number;
+	const subtotal = context.getNodeParameter('serviceSubtotal', itemIndex, 0) as number;
+	const salesChannelId = (context.getNodeParameter('serviceSalesChannelId', itemIndex, '') as string).trim();
+	const cost = context.getNodeParameter('serviceCost', itemIndex, 0) as number;
+
+	addObjectValues(body, {
+		cost,
+		desc,
+		name,
+		salesChannelId,
+		subtotal,
+		tax,
+	});
+
+	if (tags) {
+		body.tags = splitTags(tags);
+	}
+
+	return body;
+}
+
+function getPaymentStructuredBody(context: IExecuteFunctions, itemIndex: number): IDataObject {
+	const body: IDataObject = {};
+	const bankId = (context.getNodeParameter('paymentBankId', itemIndex, '') as string).trim();
+	const contactId = (context.getNodeParameter('paymentContactId', itemIndex, '') as string).trim();
+	const amount = context.getNodeParameter('paymentAmount', itemIndex, 0) as number;
+	const desc = (context.getNodeParameter('paymentDescription', itemIndex, '') as string).trim();
+	const date = (context.getNodeParameter('paymentDate', itemIndex, '') as string).trim();
+
+	addObjectValues(body, {
+		amount,
+		bankId,
+		contactId,
+		desc,
+	});
+
+	if (date) {
+		body.date = normalizeUnixTimestamp(date, 'Date');
+	}
+
+	return body;
+}
+
+function getProjectStructuredBody(context: IExecuteFunctions, itemIndex: number): IDataObject {
+	const operation = context.getNodeParameter('operation', itemIndex) as string;
+	const body: IDataObject = {};
+	const name = (context.getNodeParameter('projectName', itemIndex, '') as string).trim();
+	const desc = (context.getNodeParameter('projectDescription', itemIndex, '') as string).trim();
+	const contactName = (context.getNodeParameter('projectContactName', itemIndex, '') as string).trim();
+	const date = (context.getNodeParameter('projectDate', itemIndex, '') as string).trim();
+	const dueDate = (context.getNodeParameter('projectDueDate', itemIndex, '') as string).trim();
+	const status = context.getNodeParameter('projectStatus', itemIndex, 0) as number;
+	const billable = context.getNodeParameter('projectBillable', itemIndex, 0) as number;
+	const price = context.getNodeParameter('projectPrice', itemIndex, 0) as number;
+	const tags = (context.getNodeParameter('projectTags', itemIndex, '') as string).trim();
+
+	addObjectValues(body, {
+		contactName,
+		desc,
+		name,
+	});
+
+	if (date) {
+		body.date = normalizeUnixTimestamp(date, 'Start Date');
+	}
+
+	if (dueDate) {
+		body.dueDate = normalizeUnixTimestamp(dueDate, 'Due Date');
+	}
+
+	if (operation === 'update') {
+		body.status = status;
+		body.billable = billable;
+		body.price = price;
+	}
+
+	if (tags) {
+		body.tags = splitTags(tags);
+	}
+
+	return body;
+}
+
 function getBodyParameters(context: IExecuteFunctions, itemIndex: number): IDataObject {
 	const body: IDataObject = {};
 	const resource = context.getNodeParameter('resource', itemIndex) as string;
 	const operation = context.getNodeParameter('operation', itemIndex) as string;
 	const advancedBodyJsonParameterName = getAdvancedBodyJsonParameterName(resource);
 
-	if (resource === 'document' && ['create', 'update'].includes(operation)) {
-		addObjectValues(body, getDocumentStructuredBody(context, itemIndex));
+	if (['create', 'update'].includes(operation)) {
+		if (resource === 'contact') {
+			addObjectValues(body, getContactStructuredBody(context, itemIndex));
+		}
+
+		if (resource === 'document') {
+			addObjectValues(body, getDocumentStructuredBody(context, itemIndex));
+		}
+
+		if (resource === 'payment') {
+			addObjectValues(body, getPaymentStructuredBody(context, itemIndex));
+		}
+
+		if (resource === 'product') {
+			addObjectValues(body, getProductStructuredBody(context, itemIndex));
+		}
+
+		if (resource === 'project') {
+			addObjectValues(body, getProjectStructuredBody(context, itemIndex));
+		}
+
+		if (resource === 'service') {
+			addObjectValues(body, getServiceStructuredBody(context, itemIndex));
+		}
 	}
 
 	addObjectValues(body, getFixedCollectionPairs(context, 'bodyFields.fields', itemIndex));
