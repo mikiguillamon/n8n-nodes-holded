@@ -5,6 +5,7 @@ Community node de n8n para trabajar con Holded.
 ## Qué incluye
 
 - Autenticación por API key de Holded.
+- Activación mediante licencia.
 - Operaciones guiadas para recursos habituales:
   - Contacts
   - Products
@@ -40,6 +41,8 @@ Con esto el nodo es usable desde el primer momento y, a la vez, no se queda cort
 ## Credenciales
 
 Holded autentica las peticiones enviando la API key en la cabecera `key`.
+
+Además, este nodo requiere una licencia. En la versión actual, cualquier clave de licencia con 10 o más caracteres se considera válida. La validación está preparada para cambiarse más adelante a una comprobación contra un servidor externo.
 
 ## Instalación en n8n
 
